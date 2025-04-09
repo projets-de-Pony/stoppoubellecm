@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaSearch, FaFilter, FaChevronDown, FaSync, FaCamera, FaMapMarkedAlt, FaLeaf, FaTag, FaSort, FaTimes } from 'react-icons/fa';
-import { getTrashReports } from '../services/supabase';
+import { getTrashReports, searchTrashReports, recordInteraction } from '../services/supabase';
 import { TrashReport } from '../types';
 import TrashReportCard from '../components/TrashReportCard';
 import MapComponent from '../components/MapComponent';
@@ -108,24 +108,30 @@ const ReportsPage = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+    
+    // Enregistrer une interaction lors de la recherche
+    if (e.target.value.length > 2) {
+      recordInteraction();
+    }
   };
 
   const handleFilterChange = (category: 'status' | 'size', value: string) => {
-    setFilters(prevFilters => {
-      const currentValues = [...prevFilters[category]];
-      
-      if (currentValues.includes(value)) {
-        return {
-          ...prevFilters,
-          [category]: currentValues.filter(v => v !== value)
-        };
-      } else {
-        return {
-          ...prevFilters,
-          [category]: [...currentValues, value]
-        };
-      }
-    });
+    const newFilters = { ...filters };
+    
+    if (newFilters[category].includes(value)) {
+      // Retirer le filtre s'il est déjà présent
+      newFilters[category] = newFilters[category].filter(f => f !== value);
+      setActiveFilters(prev => prev.filter(f => f !== `${category}:${value}`));
+    } else {
+      // Ajouter le nouveau filtre
+      newFilters[category].push(value);
+      setActiveFilters(prev => [...prev, `${category}:${value}`]);
+    }
+    
+    setFilters(newFilters);
+    
+    // Enregistrer une interaction lors du filtrage
+    recordInteraction();
   };
 
   const removeFilter = (filter: string) => {

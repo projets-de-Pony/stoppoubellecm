@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FaUsers, FaTrash, FaChartPie, FaCog, FaUserShield, FaCamera, FaBuilding, FaEnvelope } from 'react-icons/fa';
+import { FaUsers, FaTrash, FaChartPie, FaCog, FaUserShield, FaCamera, FaBuilding, FaEnvelope, FaChartLine } from 'react-icons/fa';
 import { getTrashReports, getUsers, getPendingCommunications } from '../services/supabase';
 import { TrashReport } from '../types';
 import TrashReportCard from '../components/TrashReportCard';
 import MunicipalityManager from '../components/MunicipalityManager';
 import CommunicationManager from '../components/CommunicationManager';
+import AnalyticsStatsCard from '../components/AnalyticsStatsCard';
 
 const AdminDashboard = () => {
   const [reports, setReports] = useState<TrashReport[]>([]);
@@ -18,7 +19,7 @@ const AdminDashboard = () => {
     activeUsers: 0,
     pendingCommunications: 0
   });
-  const [activeTab, setActiveTab] = useState<'overview' | 'municipalities' | 'communications'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'municipalities' | 'communications' | 'stats'>('overview');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +96,17 @@ const AdminDashboard = () => {
                 {stats.pendingCommunications}
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`mr-8 py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'stats'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <FaChartLine className="inline-block mr-1" />
+            Statistiques d'utilisation
           </button>
         </nav>
       </div>
@@ -199,9 +211,12 @@ const AdminDashboard = () => {
               <FaUsers className="h-5 w-5 text-primary-600 mr-2" />
               <span>Gérer les utilisateurs</span>
             </button>
-            <button className="flex items-center justify-center p-4 bg-white rounded-lg shadow hover:bg-gray-50">
-              <FaCog className="h-5 w-5 text-primary-600 mr-2" />
-              <span>Paramètres</span>
+            <button 
+              onClick={() => setActiveTab('stats')}
+              className="flex items-center justify-center p-4 bg-white rounded-lg shadow hover:bg-gray-50"
+            >
+              <FaChartLine className="h-5 w-5 text-primary-600 mr-2" />
+              <span>Voir les statistiques</span>
             </button>
           </div>
         </>
@@ -213,6 +228,28 @@ const AdminDashboard = () => {
 
       {activeTab === 'communications' && (
         <CommunicationManager />
+      )}
+
+      {activeTab === 'stats' && (
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Statistiques d'utilisation de la plateforme</h2>
+            <p className="text-gray-600 mb-4">
+              Suivez l'activité des utilisateurs sur la plateforme, les visites, les interactions et les contributions.
+            </p>
+          </div>
+          
+          <AnalyticsStatsCard timeframe={30} />
+          
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">À propos des statistiques</h3>
+            <ul className="list-disc pl-5 text-gray-600 space-y-2">
+              <li><strong>Visites</strong>: Nombre total de visites sur les différentes pages du site</li>
+              <li><strong>Interactions</strong>: Actions réalisées par les utilisateurs (recherches, clics, filtres)</li>
+              <li><strong>Contributions</strong>: Nouveaux signalements ajoutés ou interactions avec des signalements existants</li>
+            </ul>
+          </div>
+        </div>
       )}
     </div>
   );

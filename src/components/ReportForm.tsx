@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCamera, FaUpload, FaSpinner, FaMapMarkerAlt, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import { ReportFormData } from '../types';
-import { uploadImage, createTrashReport, supabase, checkSimilarReports } from '../services/supabase';
+import { uploadImage, createTrashReport, supabase, checkSimilarReports, recordContribution } from '../services/supabase';
 import { toast } from 'react-toastify';
 import SimilarReportsModal from './SimilarReportsModal';
 
@@ -163,6 +163,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ isAuthenticated, onSuccess }) =
   };
 
   const handleContribute = async (reportId: string) => {
+    setIsSubmitting(true);
     try {
       // Vérifier d'abord si le rapport existe
       const { data: report, error: reportError } = await supabase
@@ -191,9 +192,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ isAuthenticated, onSuccess }) =
       if (onSuccess) {
         onSuccess();
       }
+
+      // Enregistrer la contribution
+      await recordContribution();
     } catch (error) {
       console.error('Erreur lors de la contribution:', error);
       toast.error('Une erreur est survenue lors de la contribution');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -243,8 +249,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ isAuthenticated, onSuccess }) =
         }
       }
 
-      // Si pas de signalements similaires ou l'utilisateur a choisi de continuer
+      // Soumettre directement si aucun similaire
       await submitReport(data, imageUrl);
+      
+      // Enregistrer la contribution
+      await recordContribution();
     } catch (error) {
       console.error('Erreur lors de la soumission:', error);
       let errorMessage = 'Une erreur est survenue lors de la soumission du signalement';

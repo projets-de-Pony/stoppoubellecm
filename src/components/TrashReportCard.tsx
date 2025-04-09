@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaUsers, FaCheck, FaTimes, FaTrash, FaStar } from 'react-icons/fa';
 import { TrashReport } from '../types';
-import { updateTrashReport } from '../services/supabase';
+import { updateTrashReport, recordInteraction } from '../services/supabase';
 import { toast } from 'react-toastify';
 
 interface TrashReportCardProps {
@@ -25,6 +25,9 @@ const TrashReportCard = ({ report, showActions = false }: TrashReportCardProps) 
     setIsUpdating(true);
     try {
       await updateTrashReport(report.id, { status: newStatus });
+      
+      await recordInteraction();
+      
       toast.success('Statut mis à jour avec succès');
     } catch (error) {
       console.error('Erreur lors de la mise à jour du statut:', error);

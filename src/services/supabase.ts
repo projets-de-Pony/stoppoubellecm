@@ -833,4 +833,112 @@ export const getCities = async (): Promise<{id: string; name: string; region: st
     console.error('Erreur dans getCities:', error);
     return [];
   }
+};
+
+/**
+ * Interface pour les statistiques d'analyse
+ */
+export interface AnalyticsStats {
+  id: string;
+  date: string;
+  visits: number;
+  interactions: number;
+  contributions: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Interface pour les statistiques totales
+ */
+export interface TotalStats {
+  total_visits: number;
+  total_interactions: number;
+  total_contributions: number;
+  daily_stats: AnalyticsStats[];
+}
+
+/**
+ * Enregistre une visite sur la plateforme
+ */
+export const recordVisit = async (): Promise<void> => {
+  try {
+    await supabase.rpc('increment_stats', { p_stat_type: 'visit' });
+    console.log('Visite enregistrée');
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement de la visite:', error);
+  }
+};
+
+/**
+ * Enregistre une interaction sur la plateforme
+ * (par exemple: recherche, clic sur un signalement, filtrage, etc.)
+ */
+export const recordInteraction = async (): Promise<void> => {
+  try {
+    await supabase.rpc('increment_stats', { p_stat_type: 'interaction' });
+    console.log('Interaction enregistrée');
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement de l\'interaction:', error);
+  }
+};
+
+/**
+ * Enregistre une contribution sur la plateforme
+ * (par exemple: nouveau signalement, commentaire, etc.)
+ */
+export const recordContribution = async (): Promise<void> => {
+  try {
+    await supabase.rpc('increment_stats', { p_stat_type: 'contribution' });
+    console.log('Contribution enregistrée');
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement de la contribution:', error);
+  }
+};
+
+/**
+ * Récupère les statistiques totales et récentes
+ * @param days - Nombre de jours pour les statistiques récentes (défaut: 30)
+ */
+export const getAnalyticsStats = async (days: number = 30): Promise<TotalStats> => {
+  try {
+    // Récupérer les statistiques des X derniers jours
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
+    const { data: dailyStats, error: dailyError } = await supabase
+      .from('analytics_stats')
+      .select('*')
+      .gte('date', startDate.toISOString().split('T')[0])
+      .order('date', { ascending: false });
+      
+    if (dailyError) {
+      throw new Error(`Erreur lors de la récupération des statistiques quotidiennes: ${dailyError.message}`);
+    }
+    
+    // Calculer les totaux
+    const { data: totals, error: totalsError } = await supabase
+      .from('analytics_stats')
+      .select('SUM(visits) as total_visits, SUM(interactions) as total_interactions, SUM(contributions) as total_contributions')
+      .single();
+      
+    if (totalsError) {
+      throw new Error(`Erreur lors de la récupération des statistiques totales: ${totalsError.message}`);
+    }
+    
+    return {
+      total_visits: totals?.total_visits || 0,
+      total_interactions: totals?.total_interactions || 0,
+      total_contributions: totals?.total_contributions || 0,
+      daily_stats: dailyStats || []
+    };
+  } catch (error) {
+    console.error('Erreur dans getAnalyticsStats:', error);
+    return {
+      total_visits: 0,
+      total_interactions: 0, 
+      total_contributions: 0,
+      daily_stats: []
+    };
+  }
 }; 

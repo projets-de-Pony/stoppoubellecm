@@ -1,0 +1,22 @@
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  z-index: 10;
+}
+
+.leaflet-pane {
+  z-index: 1;
+}
+
+.leaflet-control {
+  z-index: 15;
+}
+
+.leaflet-popup {
+  z-index: 20;
+} 

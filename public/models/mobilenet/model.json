@@ -1,0 +1,45 @@
+{
+  "format": "layers-model",
+  "generatedBy": "StopPoubelleCM App",
+  "convertedBy": "TensorFlow.js Converter",
+  "modelTopology": {
+    "keras_version": "2.6.0",
+    "backend": "tensorflow",
+    "model_config": {
+      "class_name": "Sequential",
+      "config": {
+        "name": "sequential",
+        "layers": [
+          {
+            "class_name": "Dense",
+            "config": {
+              "name": "dense",
+              "trainable": true,
+              "batch_input_shape": [null, 1],
+              "dtype": "float32",
+              "units": 1,
+              "activation": "linear"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "weightsManifest": [
+    {
+      "paths": ["weights.bin"],
+      "weights": [
+        {
+          "name": "dense/kernel",
+          "shape": [1, 1],
+          "dtype": "float32"
+        },
+        {
+          "name": "dense/bias",
+          "shape": [1],
+          "dtype": "float32"
+        }
+      ]
+    }
+  ]
+}

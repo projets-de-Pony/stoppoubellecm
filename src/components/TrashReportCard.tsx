@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaMapMarkerAlt, FaCalendarAlt, FaEye, FaTrash, FaEdit, FaCheck, FaTimes, FaUsers, FaStar } from 'react-icons/fa';
+import { FaUsers, FaCheck, FaTimes, FaTrash, FaStar } from 'react-icons/fa';
 import { TrashReport } from '../types';
 import { updateTrashReport } from '../services/supabase';
 import { toast } from 'react-toastify';
@@ -150,7 +149,7 @@ const TrashReportCard = ({ report, showActions = false }: TrashReportCardProps) 
               className="p-2 text-blue-600 hover:bg-blue-50 rounded"
               title="Marquer comme en cours de traitement"
             >
-              <FaEye />
+              <FaUsers />
             </button>
             <button
               onClick={() => handleStatusUpdate('resolved')}

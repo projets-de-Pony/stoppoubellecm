@@ -35,7 +35,7 @@ const Navbar = () => {
     
     // S'abonner aux changements d'état d'authentification
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setIsAuthenticated(!!session);
         
         if (session?.user) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, CircleMarker } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './map.css'; // Importer notre CSS personnalisé
@@ -29,7 +29,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Position du centre du Cameroun
-  const cameroonCenter = [7.3697, 12.3547];
+  const cameroonCenter: [number, number] = [7.3697, 12.3547];
   const defaultZoom = 6;
 
   // Chargement des signalements
@@ -69,19 +69,19 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
   }, []);
 
   // Couleurs des marqueurs selon le statut
-  const statusColors = {
+  const statusColors: Record<string, { color: string; fillColor: string }> = {
     pending: { color: '#FFC107', fillColor: '#FFC107' },
     in_review: { color: '#2196F3', fillColor: '#2196F3' },
     resolved: { color: '#4CAF50', fillColor: '#4CAF50' },
   };
 
-  const statusLabels = {
+  const statusLabels: Record<string, string> = {
     pending: 'En attente',
     in_review: 'Contribué',
     resolved: 'Résolu',
   };
 
-  const sizeText = {
+  const sizeText: Record<string, string> = {
     small: 'Petite',
     medium: 'Moyenne',
     large: 'Grande',
@@ -97,7 +97,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
       ) : (
         <>
           <MapContainer
-            center={cameroonCenter as [number, number]}
+            center={cameroonCenter}
             zoom={defaultZoom}
             style={{ height: '500px', width: '100%', borderRadius: '0.5rem' }}
             className="z-10"
@@ -111,12 +111,12 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
               <CircleMarker
                 key={report.id}
                 center={[report.location.latitude!, report.location.longitude!]}
-                radius={8}
                 pathOptions={{
                   color: statusColors[report.status].color,
                   fillColor: statusColors[report.status].fillColor,
                   fillOpacity: 0.7,
                 }}
+                radius={8}
               >
                 <Popup>
                   <div>

@@ -32,11 +32,15 @@ const SimilarReportsModal: React.FC<SimilarReportsModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const sizeText = {
+  const sizeText: Record<string, string> = {
     small: 'Petite',
     medium: 'Moyenne',
     large: 'Grande',
     very_large: 'Très grande'
+  };
+
+  const getSizeText = (size: string): string => {
+    return sizeText[size as keyof typeof sizeText] || 'Taille inconnue';
   };
 
   return (
@@ -84,7 +88,7 @@ const SimilarReportsModal: React.FC<SimilarReportsModalProps> = ({
                         <h4 className="font-medium">{report.location.neighborhood}</h4>
                         <p className="text-sm text-gray-600 mt-1">{report.description}</p>
                         <div className="mt-2 text-sm text-gray-500">
-                          <p>Taille: {sizeText[report.size]}</p>
+                          <p>Taille: {getSizeText(report.size)}</p>
                           {report.username && <p>Signalé par: {report.username}</p>}
                           <p>Similarité: {Math.round(report.similarity_score * 100)}%</p>
                         </div>

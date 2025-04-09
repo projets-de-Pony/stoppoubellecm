@@ -311,7 +311,7 @@ export const getTrashReportStats = async () => {
     const { data, error } = await supabase
       .from('trash_reports')
       .select('status, count')
-      .group('status');
+      .groupBy('status');
 
     if (error) {
       throw new Error(`Erreur lors de la récupération des statistiques: ${error.message}`);
